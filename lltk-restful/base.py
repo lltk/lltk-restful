@@ -9,6 +9,8 @@ import lltk.exceptions
 from flask import Flask
 from flask import jsonify, request
 
+from failure import *
+
 __author__ = 'Markus Beuckelmann'
 __author_email__ = 'email@markus-beuckelmann.de'
 __version__ = '0.1.0'
@@ -20,6 +22,12 @@ HOST = '127.0.0.1'
 PORT = 5000
 
 app = Flask(NAME)
+
+app.register_error_handler(404, http_404)
+app.register_error_handler(500, http_500)
+app.register_error_handler(TypeError, http_400)
+app.register_error_handler(lltk.exceptions.LanguageNotSupported, http_404)
+app.register_error_handler(Exception, http_500)
 
 if DEBUG:
 	app.debug = True
