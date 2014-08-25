@@ -49,6 +49,15 @@ def lltkapi(language, method, word, extraargs = tuple()):
 
 	return jsonify(data)
 
+@app.route('/lltk/info', methods = ['GET'])
+def info():
+
+	data = dict()
+	data['server'] = 'Language Learning Toolkit ResRESTful API'
+	data['version'] = __version__
+	data['lltk-version'] = lltk.config['version']
+	return jsonify(data)
+
 if __name__ == '__main__':
 
 	app.run(
