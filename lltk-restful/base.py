@@ -61,6 +61,28 @@ def lltkapi(language, method, word, extraargs = tuple()):
 
 	return jsonify(data)
 
+@app.route('/lltk/translate/<string:src>/<string:dest>/<string:word>', methods = ['GET'])
+@app.route('/lltk/translate/<string:src>/<string:dest>/<path:extraargs>/<string:word>', methods = ['GET'])
+@cache.cached(timeout = 300, key_prefix = lambda: md5(repr(request)).hexdigest(), unless = lambda: bool(request.args.has_key('caching') and request.args['caching'].lower() == 'false'))
+def translate(src, dest, word, extraargs = tuple(), methods = ['GET']):
+	''' Returns translate() results as a JSON document. '''
+
+	data = dict()
+	data['language'] = dest
+	data['language-from'] = src
+	data['language-to'] = dest
+	data['method'] = 'translate'
+	data['word'] = word
+	data['result'] = None
+
+	if not isinstance(extraargs, tuple):
+		extraargs = tuple(extraargs.split('/'))
+	kwargs = request.args.to_dict()
+
+	data['result'] = lltk.generic.translate(src, dest, word, *extraargs, **kwargs)
+
+	return jsonify(data)
+
 @app.route('/lltk/info', methods = ['GET'])
 def info():
 
