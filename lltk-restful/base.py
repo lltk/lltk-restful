@@ -8,6 +8,8 @@ import lltk.exceptions
 
 from flask import Flask
 from flask import jsonify, request
+from flask.ext.cache import Cache
+from hashlib import md5
 
 from failure import *
 
@@ -22,6 +24,7 @@ HOST = '127.0.0.1'
 PORT = 5000
 
 app = Flask(NAME)
+cache = Cache(app ,config = {'CACHE_TYPE': 'simple'})
 
 app.register_error_handler(404, http_404)
 app.register_error_handler(500, http_500)
@@ -37,6 +40,7 @@ if not CACHING:
 
 @app.route('/lltk/<string:language>/<string:method>/<string:word>', methods = ['GET'])
 @app.route('/lltk/<string:language>/<string:method>/<path:extraargs>/<string:word>', methods = ['GET'])
+@cache.cached(timeout = 3600, key_prefix = lambda: md5(repr(request)).hexdigest(), unless = lambda: bool(request.args.has_key('caching') and request.args['caching'].lower() == 'false'))
 def lltkapi(language, method, word, extraargs = tuple()):
 	''' Returns LLTK's results as a JSON document. '''
 
