@@ -17,8 +17,8 @@ if config['debug']:
 if config['caching']:
 	lltk.caching.enable()
 
-@app.route('/lltk/<string:language>/<string:method>/<string:word>', methods = ['GET'])
-@app.route('/lltk/<string:language>/<string:method>/<path:extraargs>/<string:word>', methods = ['GET'])
+@app.route('/lltk/<string:method>/<string:language>/<string:word>', methods = ['GET'])
+@app.route('/lltk/<string:method>/<string:language>/<path:extraargs>/<string:word>', methods = ['GET'])
 @cache.cached(timeout = 3600, key_prefix = lambda: md5(repr(request)).hexdigest(), unless = lambda: bool(request.args.has_key('caching') and request.args['caching'].lower() == 'false'))
 def lltkapi(language, method, word, extraargs = tuple()):
 	''' Returns LLTK's results as a JSON document. '''
