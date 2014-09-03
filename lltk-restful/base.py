@@ -55,7 +55,10 @@ def lltkapi(language, method, word, extraargs = tuple()):
 		if not isinstance(extraargs, tuple):
 			extraargs = tuple(extraargs.split('/'))
 		kwargs = request.args.to_dict()
-		data['result'] = function(language, word, *extraargs, **kwargs)
+		try:
+			data['result'] = function(language, word, *extraargs, **kwargs)
+		except TypeError:
+			data['result'] = function(language, word, *extraargs)
 	else:
 		return http_404(NotImplementedError)
 
