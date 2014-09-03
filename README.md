@@ -8,28 +8,28 @@ Examples
 
 The API should be self-explanatory after you have had a look at the following examples:
 
- * **IPA**: `curl -X GET "http://server:port/lltk/de/ipa/Garten"`
+ * **IPA**: `curl -X GET "http://server:port/lltk/ipa/de/Garten"`
 
- * **Pluralization**: `curl -X GET "http://server:port/lltk/nl/plural/boom"`
+ * **Pluralization**: `curl -X GET "http://server:port/lltk/plural/nl/boom"`
 
- * **Definite/Indefinite articles**: `curl -X GET "http://server:port/lltk/de/articles/Katze"`
+ * **Definite/Indefinite articles**: `curl -X GET "http://server:port/lltk/articles/de/Katze"`
 
  * For **conjugation of verbs**, try the following:
  ```bash
- curl -X GET "http://server:port/lltk/de/conjugate/bauen"
- curl -X GET "http://server:port/lltk/de/conjugate/past/bauen"
- curl -X GET "http://server:port/lltk/de/conjugate/perfect/bauen"
+ curl -X GET "http://server:port/lltk/conjugate/de/bauen"
+ curl -X GET "http://server:port/lltk/conjugate/depast/bauen"
+ curl -X GET "http://server:port/lltk/conjugate/de/perfect/bauen"
  ```
 
- * **Audiosamples**: `curl -X GET "http://server:port/lltk/it/audiosamples/mela?key=xxx"`
+ * **Audiosamples**: `curl -X GET "http://server:port/lltk/audiosamples/it/mela?key=xxx"`
 
- * **Samples sentences**: `curl -X GET "http://server:port/lltk/es/textsamples/jardín"`
+ * **Samples sentences**: `curl -X GET "http://server:port/lltk/textsamples/es/jardín"`
 
  * For **images**, try the following:
  ```bash
- curl -X GET "http://server:port/lltk/fr/images/souris"
- curl -X GET "http://server:port/lltk/fr/images/souris?itype=clipart&isize=large"
- curl -X GET "http://server:port/lltk/fr/images/souris?itype=lineart&isize=small"
+ curl -X GET "http://server:port/lltk/images/fr/souris"
+ curl -X GET "http://server:port/lltk/images/fr/souris?itype=clipart&isize=large"
+ curl -X GET "http://server:port/lltk/images/fr/souris?itype=lineart&isize=small"
  ```
 
 To get some basic information about the backend you can `GET` `/lltk/info`.

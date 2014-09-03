@@ -1,27 +1,22 @@
 #!/usr/bin/python
 # -*- coding: UTF-8 -*-
 
-import lltk
-import lltk.generic
-import lltk.caching
+__author__ = 'Markus Beuckelmann'
+__author_email__ = 'email@markus-beuckelmann.de'
+__version__ = '0.2.0'
+
 import lltk.exceptions
 
 from flask import Flask
-from flask import jsonify, request
+from flask.ext.cache import Cache
+
+from config import config
+config['version'] = __version__
+
+app = Flask(config['name'])
+cache = Cache(app ,config = {'CACHE_TYPE': 'simple'})
 
 from failure import *
-
-__author__ = 'Markus Beuckelmann'
-__author_email__ = 'email@markus-beuckelmann.de'
-__version__ = '0.1.0'
-
-DEBUG = True
-CACHING = True
-NAME = 'lltk-restful'
-HOST = '127.0.0.1'
-PORT = 5000
-
-app = Flask(NAME)
 
 app.register_error_handler(404, http_404)
 app.register_error_handler(500, http_500)
@@ -29,46 +24,27 @@ app.register_error_handler(TypeError, http_400)
 app.register_error_handler(lltk.exceptions.LanguageNotSupported, http_404)
 app.register_error_handler(Exception, http_500)
 
-if DEBUG:
-	app.debug = True
-	lltk.config['debug'] = True
-if not CACHING:
-	lltk.caching.disable()
-
-@app.route('/lltk/<string:language>/<string:method>/<string:word>', methods = ['GET'])
-@app.route('/lltk/<string:language>/<string:method>/<path:extraargs>/<string:word>', methods = ['GET'])
-def lltkapi(language, method, word, extraargs = tuple()):
-	''' Returns LLTK's results as a JSON document. '''
-
-	data = dict()
-	data['language'] = language
-	data['method'] = method
-	data['word'] = word
-	data['result'] = None
-
-	if hasattr(lltk.generic, method) and callable(getattr(lltk.generic, method)):
-		function = getattr(lltk.generic, method)
-		if not isinstance(extraargs, tuple):
-			extraargs = tuple(extraargs.split('/'))
-		kwargs = request.args.to_dict()
-		data['result'] = function(language, word, *extraargs, **kwargs)
-	else:
-		return http_404(NotImplementedError)
-
-	return jsonify(data)
-
-@app.route('/lltk/info', methods = ['GET'])
-def info():
-
-	data = dict()
-	data['server'] = 'Language Learning Toolkit ResRESTful API'
-	data['version'] = __version__
-	data['lltk-version'] = lltk.config['version']
-	return jsonify(data)
+from views import *
 
 if __name__ == '__main__':
 
-	app.run(
-		host = HOST,
-		port = PORT
-	)
+	if config['debug']:
+
+		# Run the development server if debug mode is on
+		app.run(debug = True, host = config['host'], port = config['port']);
+	else:
+
+		try:
+
+			from tornado.wsgi import WSGIContainer
+			from tornado.httpserver import HTTPServer
+			from tornado.ioloop import IOLoop
+			from tornado.log import enable_pretty_logging
+
+			enable_pretty_logging()
+			http_server = HTTPServer(WSGIContainer(app))
+			http_server.listen(config['port'], config['host'])
+			IOLoop.instance().start()
+
+		except ImportError:
+			app.run(debug = False, host = config['host'], port = config['port']);
